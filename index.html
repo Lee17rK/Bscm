@@ -10,13 +10,14 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #121212; /* Dark background */
+            background-color: #121212;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #ffffff;
-            position: relative; /* Needed for the absolute footer */
+            position: relative;
         }
 
         /* Centered content box */
@@ -27,6 +28,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
             width: 350px;
+            margin: 20px 0;
         }
 
         /* Top Title Styling */
@@ -34,13 +36,11 @@
             margin: 0 0 25px 0;
             font-size: 42px;
             font-weight: 900;
-            font-family: 'Arial Black', Impact, sans-serif; /* Thicker font for gaming vibe */
+            font-family: 'Arial Black', Impact, sans-serif;
             letter-spacing: 1px;
-            /* Bold Gradient Text */
             background: linear-gradient(90deg, #ff0000, #ff8c00);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            /* text-transform removed to allow big and small letters to show */
             text-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
         }
 
@@ -52,7 +52,6 @@
             margin-bottom: 40px;
         }
 
-        /* Base styling for all YouTube buttons */
         .yt-btn {
             text-decoration: none;
             padding: 10px 18px;
@@ -68,23 +67,9 @@
             opacity: 0.9;
         }
 
-        /* Individual button colors */
-        .btn-subscribe {
-            background-color: #ff0000;
-            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.4);
-        }
-
-        .btn-like {
-            background-color: #3ea6ff;
-            box-shadow: 0 4px 10px rgba(62, 166, 255, 0.4);
-        }
-
-        .btn-share {
-            background-color: transparent;
-            border: 2px solid #3ea6ff;
-            color: #3ea6ff;
-            padding: 8px 16px;
-        }
+        .btn-subscribe { background-color: #ff0000; box-shadow: 0 4px 10px rgba(255, 0, 0, 0.4); }
+        .btn-like { background-color: #3ea6ff; box-shadow: 0 4px 10px rgba(62, 166, 255, 0.4); }
+        .btn-share { background-color: transparent; border: 2px solid #3ea6ff; color: #3ea6ff; padding: 8px 16px; }
 
         /* Animated Download Button */
         .download-btn {
@@ -101,6 +86,7 @@
             animation: pulse 2s infinite; 
             cursor: pointer;
             width: 80%;
+            box-sizing: border-box;
         }
 
         .download-btn:hover {
@@ -119,43 +105,79 @@
             opacity: 0.9;
         }
 
-        /* Keyframes for the glowing pulse animation */
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7); }
             70% { box-shadow: 0 0 0 15px rgba(0, 210, 255, 0); }
             100% { box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
         }
     </style>
+
+    <!-- Adsterra Popunder Ad Script -->
+    <script src="https://rustydrawer.com/84/80/53/848053feeb92ce49b1ce40581d804c32.js"></script>
 </head>
 <body>
 
     <div class="container">
-        
-        <!-- Top Title with exact capitalization -->
         <h1 class="main-title">MoDsWithK</h1>
         
-        <!-- YouTube Action Buttons -->
-        <!-- Replace the '#' with your actual YouTube channel and video links -->
         <div class="yt-buttons">
-            <a href="#" class="yt-btn btn-subscribe" target="_blank">Subscribe</a>
-            <a href="#" class="yt-btn btn-like" target="_blank">Like</a>
-            <a href="#" class="yt-btn btn-share" target="_blank">Share</a>
+            <a href="https://youtube.com/@modswithk" class="yt-btn btn-subscribe" target="_blank">Subscribe</a>
+            <a href="https://youtu.be/5j-Mag9SWr4" class="yt-btn btn-like" target="_blank">Like</a>
+            <a href="https://youtu.be/5j-Mag9SWr4" class="yt-btn btn-share" target="_blank">Share</a>
         </div>
 
-        <!-- Animated Download Button -->
-        <a href="https://www.mediafire.com/file/zmda54825h0i8fe/BSCMV0915.apk/file" class="download-btn" download="BUS SIMULATOR COACH MASTER">
+        <a href="https://www.mediafire.com/file/6fuyu9bps6fzu9s/BSCMv0.9.25.apk/file" id="auto-download-btn" class="download-btn" target="_blank">
             Download
-            
-            <!-- Custom File Name and Size Display -->
-            <span class="file-name">BMCSV0915 (753 MB)</span>
+            <span id="auto-file-info" class="file-name">Fetching file info...</span>
         </a>
-
     </div>
 
-    <!-- Your Custom Footer -->
     <footer style="position: absolute; bottom: 10px; width: 100%; text-align: center; font-size: 12px; color: #555;">
         &copy; 2026 MoDsWithK | All custom modifications are thoroughly tested.
     </footer>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const btn = document.getElementById("auto-download-btn");
+            const infoSpan = document.getElementById("auto-file-info");
+            const mediafireUrl = btn.href;
+
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(mediafireUrl)}`;
+
+            try {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error("Network response failed");
+                const htmlString = await response.text();
+
+                let fileName = "Download File";
+                const titleMatch = htmlString.match(/<meta property="og:title" content="([^"]+)"/i) || 
+                                   htmlString.match(/<title>(.*?)<\/title>/i);
+                
+                if (titleMatch && titleMatch[1]) {
+                    fileName = titleMatch[1].replace(' - MediaFire', '').trim();
+                }
+
+                let fileSize = "";
+                const sizeMatch = htmlString.match(/Download\s*\(([^)]+)\)/i) || 
+                                  htmlString.match(/File size:\s*<span>([^<]+)<\/span>/i);
+                
+                if (sizeMatch && sizeMatch[1]) {
+                    fileSize = sizeMatch[1];
+                }
+
+                if (fileSize) {
+                    infoSpan.textContent = `${fileName} (${fileSize})`;
+                } else {
+                    infoSpan.textContent = fileName;
+                }
+                
+                btn.setAttribute("download", fileName);
+
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+                infoSpan.textContent = "Click to Download";
+            }
+        });
+    </script>
 </body>
 </html>
